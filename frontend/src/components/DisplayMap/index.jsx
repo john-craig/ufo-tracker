@@ -1,30 +1,34 @@
 import React from "react";
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
+//import { Wrapper, Status } from "@googlemaps/react-wrapper";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  ZoomableGroup,
+} from "react-simple-maps";
 
-const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-
-const DisplayMapInner = () => {
-  const ref = React.useRef(null);
-  const [map, setMap] = React.useState();
-
-  React.useEffect(() => {
-    if (ref.current && !map) {
-      setMap(new window.google.maps.Map(ref.current, {}));
-    }
-  }, [ref, map]);
-
-  return <div ref={ref} />;
-};
+const geoUrl =
+  "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
 
 const DisplayMap = () => {
-  // const render = (status: Status) => {
-  //     return <h1>{status}</h1>;
-  // };
+  const handleMove = (movement) => {
+    const x = movement["x"];
+    const y = movement["y"];
+    const zoom = movement["zoom"];
+  };
 
   return (
-    <Wrapper apiKey={GOOGLE_API_KEY}>
-      <DisplayMapInner />
-    </Wrapper>
+    <ComposableMap projection="geoMercator">
+      <ZoomableGroup center={[0, 0]} zoom={1} onMove={handleMove}>
+        <Geographies geography={geoUrl}>
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography key={geo.rsmKey} geography={geo} />
+            ))
+          }
+        </Geographies>
+      </ZoomableGroup>
+    </ComposableMap>
   );
 };
 
