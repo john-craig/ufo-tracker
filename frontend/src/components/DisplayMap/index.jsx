@@ -7,6 +7,7 @@ import {
   ZoomableGroup,
   Marker,
 } from "react-simple-maps";
+import { filterCollisions } from "./utils";
 
 const geoUrl =
   "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
@@ -16,20 +17,21 @@ const DisplayMap = () => {
   const [zoom, setZoom] = React.useState(1);
 
   let hotSpots = sighting_data["sightings"].reduce((prev, cur) => {
-    let city = cur["city"];
+    let locId = cur["city"];
 
-    if (city == "") {
+    if (locId == "") {
       return prev;
     }
 
-    if (city in prev) {
-      prev[city]["count"] += 1;
-      prev[city]["sightings"].push(cur);
+    if (locId in prev) {
+      prev[locId]["count"] += 1;
+      prev[locId]["sightings"].push(cur);
     } else {
       // Filter out anything without a good
       // latitude and longitude
       if ("latitude" in cur && "longitude" in cur) {
-        prev[city] = {
+        prev[locId] = {
+          city: cur["city"],
           count: 1,
           sightings: [cur],
           coordinates: [cur["longitude"], cur["latitude"]],
@@ -39,11 +41,12 @@ const DisplayMap = () => {
 
     return prev;
   }, {});
-  for (var city in hotSpots) {
-    if (hotSpots[city]["count"] < 2) {
-      delete hotSpots[city];
+  for (var locId in hotSpots) {
+    if (hotSpots[locId]["count"] < 2) {
+      delete hotSpots[locId];
     }
   }
+  hotSpots = filterCollisions(hotSpots, 5.0);
 
   const handleMove = (movement) => {
     const x = movement["x"];
@@ -68,8 +71,8 @@ const DisplayMap = () => {
               ))
             }
           </Geographies>
-          {Object.keys(hotSpots).map((city) => (
-            <Marker key={city} coordinates={hotSpots[city]["coordinates"]}>
+          {hotSpots.map((spot) => (
+            <Marker key={spot["city"]} coordinates={spot["coordinates"]}>
               <svg
                 width={markerDimension}
                 height={markerDimension}
@@ -97,7 +100,7 @@ const DisplayMap = () => {
                     fill: "#5D5A6D",
                   }}
                 >
-                  {city}
+                  {spot["city"]}
                 </text>
               </svg>
             </Marker>
