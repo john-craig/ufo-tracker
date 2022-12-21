@@ -19,6 +19,35 @@
     just one to be visible.
 */
 
+export function mapDisplayThreshholds(locations) {
+  const maxVisibility = 9;
+  const minVisibility = 1;
+
+  const highestSightings = getHighestSightings(locations);
+
+  for (let key in locations) {
+    let loc = locations[key];
+
+    // This gives the location a basic threshhold based
+    // on how many sightings it has
+    loc["threshhold"] =
+      maxVisibility -
+      Math.floor((loc["count"] / highestSightings) * maxVisibility);
+    locations[key] = loc;
+  }
+
+  // Conver to an array
+  return locations;
+}
+
+// Returns the highest number of sightings for a given
+// location
+function getHighestSightings(locations) {
+  return Object.values(locations).reduce((highest, cur) => {
+    return cur["count"] > highest ? cur["count"] : highest;
+  }, 0);
+}
+
 //Used to determine if the given city is a large, notable location
 export function isMajorCity(city, state) {}
 
