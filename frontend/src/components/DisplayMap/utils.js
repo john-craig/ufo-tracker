@@ -74,7 +74,6 @@ export function filterCollisions(locations, granularity) {
     location["locId"] = locId;
     return location;
   });
-  //return filteredLocations
 }
 
 // Determines if the coordinates of two locations collide within a certain

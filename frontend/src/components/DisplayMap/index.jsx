@@ -57,7 +57,11 @@ const DisplayMap = () => {
     setZoom(zoom);
   };
 
-  const markerDimension = 50 / zoom;
+  const handleMarkerClick = (e) => {
+    console.log(e.target.id);
+  };
+
+  const markerDimension = 100 / zoom;
   const markerOffset = (markerDimension / 2) * -1;
 
   return (
@@ -65,9 +69,19 @@ const DisplayMap = () => {
       <ComposableMap projection="geoMercator">
         <ZoomableGroup center={[0, 0]} zoom={1} onMove={handleMove}>
           <Geographies geography={geoUrl}>
-            {({ geographies }) =>
+            {({ geographies, outline }) =>
               geographies.map((geo) => (
-                <Geography key={geo.rsmKey} geography={geo} />
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill="#456b28"
+                  //onClick={(e)=>{console.log("Clicked")}}
+                  style={{
+                    default: { outline: "none" },
+                    hover: { outline: "none" },
+                    pressed: { outline: "none" },
+                  }}
+                />
               ))
             }
           </Geographies>
@@ -78,7 +92,8 @@ const DisplayMap = () => {
                 height={markerDimension}
                 x={markerOffset}
                 y={markerOffset}
-                viewBox="-50 -20 100 20"
+                viewBox="-100 -20 200 20"
+                onClick={handleMarkerClick}
               >
                 <g
                   fill="none"
@@ -97,11 +112,19 @@ const DisplayMap = () => {
                   style={{
                     fontFamily: "system-ui",
                     //fontSize: "15px",
-                    fill: "#5D5A6D",
+                    fill: "#000000",
                   }}
                 >
                   {spot["city"]}
                 </text>
+                <rect
+                  id={spot["city"]}
+                  x="-50"
+                  y="-25"
+                  width="100"
+                  height="50"
+                  fill="#FFFFFF00"
+                />
               </svg>
             </Marker>
           ))}
