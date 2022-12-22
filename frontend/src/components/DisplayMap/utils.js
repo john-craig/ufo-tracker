@@ -25,15 +25,15 @@ export function mapDisplayThreshholds(locations) {
 
   const highestSightings = getHighestSightings(locations);
 
-  for (let key in locations) {
-    let loc = locations[key];
+  for (let i in locations) {
+    let loc = locations[i];
 
     // This gives the location a basic threshhold based
     // on how many sightings it has
     loc["threshhold"] =
       maxVisibility -
       Math.floor((loc["count"] / highestSightings) * maxVisibility);
-    locations[key] = loc;
+    locations[i] = loc;
   }
 
   // Conver to an array
@@ -43,7 +43,7 @@ export function mapDisplayThreshholds(locations) {
 // Returns the highest number of sightings for a given
 // location
 function getHighestSightings(locations) {
-  return Object.values(locations).reduce((highest, cur) => {
+  return locations.reduce((highest, cur) => {
     return cur["count"] > highest ? cur["count"] : highest;
   }, 0);
 }
