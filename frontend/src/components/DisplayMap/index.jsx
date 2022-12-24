@@ -8,22 +8,24 @@ import {
   Marker,
 } from "react-simple-maps";
 import MapMarker from "../MapMarker";
-import { filterCollisions, mapDisplayThreshholds } from "./utils";
+import { getViewCoordinates, MAP_VIEWPORT, usePrevious } from "./utils";
 
 const geoUrl =
   "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
 
 const DisplayMap = () => {
+  const [viewCoordinates, setViewCoordinates] = React.useState(MAP_VIEWPORT);
   const [locations, setLocations] = React.useState([]);
   const [position, setPosition] = React.useState([0, 0]);
   const [zoom, setZoom] = React.useState(1);
+
+  const prevZoom = usePrevious(zoom);
 
   React.useEffect(() => {
     getSightings().then((sightings) => {
       let locLocations = sightings;
 
       console.log(locLocations[0]);
-      console.log(HIGHEST_ZOOM - locLocations[0]["weight"] * HIGHEST_ZOOM);
 
       setLocations(locLocations);
     });
@@ -34,20 +36,32 @@ const DisplayMap = () => {
     const y = movement["y"];
     const zoom = movement["zoom"];
 
-    setPosition([x, y]);
-    setZoom(zoom);
+    // Only do this if the zoom as changed by an
+    // appreciable degree
+    if (Math.abs(zoom - prevZoom) > 0.25) {
+      setPosition([x, y]);
+      setZoom(zoom);
+
+      setViewCoordinates(getViewCoordinates(x, y, zoom));
+    }
   };
 
   const handleMarkerClick = (e) => {
     console.log(e.target.id);
   };
 
-  const HIGHEST_ZOOM = 9;
-
   return (
     <>
       <ComposableMap projection="geoMercator">
-        <ZoomableGroup center={[0, 0]} zoom={1} onMove={handleMove}>
+        <ZoomableGroup
+          center={[0, 0]}
+          zoom={1}
+          onMove={handleMove}
+          translateExtent={[
+            [-80, -160],
+            [880, 780],
+          ]}
+        >
           <Geographies geography={geoUrl}>
             {({ geographies, outline }) =>
               geographies.map((geo) => (
@@ -69,6 +83,7 @@ const DisplayMap = () => {
             <MapMarker
               location={loc}
               zoom={zoom}
+              viewCoordinates={viewCoordinates}
               handleMarkerClick={handleMarkerClick}
             />
           ))}

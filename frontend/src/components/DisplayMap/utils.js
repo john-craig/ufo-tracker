@@ -1,3 +1,5 @@
+import React from "react";
+
 /*
     For performance reasons, we would ideally do all calculations for all of the locations
     up-front and assign them some kind of a "threshhold". If the zoom level becomes greater
@@ -122,4 +124,46 @@ export function isCollision(locationA, locationB, granularity) {
   } else {
     return false;
   }
+}
+
+export function getViewCoordinates(x, y, zoom) {
+  // At zoom = 1
+  // const TOP_LEFT = [80,160]
+  // const BOTTOM_RIGHT = [-80,-180]
+  // const CENTER = [0, 0]
+
+  //const adjustedCenter = [x / zoom, y / zoom]
+  const adjustedCenter = [x, y];
+  const baseDimensions = MAP_VIEWPORT;
+  const adjustedDimensions = [
+    baseDimensions[0] * zoom,
+    baseDimensions[1] * zoom,
+  ];
+
+  const adjustedViewPort = [
+    [
+      adjustedCenter[0] - adjustedDimensions[0] / 2,
+      adjustedCenter[0] + adjustedDimensions[0] / 2,
+    ],
+    [
+      adjustedCenter[1] - adjustedDimensions[1] / 2,
+      adjustedCenter[1] + adjustedDimensions[1] / 2,
+    ],
+  ];
+
+  return adjustedViewPort;
+}
+
+export const MAP_VIEWPORT = [360, 360];
+
+export function usePrevious(value) {
+  // The ref object is a generic container whose current property is mutable ...
+  // ... and can hold any value, similar to an instance property on a class
+  const ref = React.useRef();
+  // Store current value in ref
+  React.useEffect(() => {
+    ref.current = value;
+  }, [value]); // Only re-run if value changes
+  // Return previous value (happens before update in useEffect above)
+  return ref.current;
 }

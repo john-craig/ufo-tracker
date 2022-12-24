@@ -11,14 +11,18 @@ const MapMarker = (props) => {
 
   const HIGHEST_ZOOM = 9;
 
-  return zoom > HIGHEST_ZOOM - location["weight"] * HIGHEST_ZOOM ? (
-    <Marker
-      key={location["sighting_city"]}
-      coordinates={[
-        location["location_coordinates"]["longitude"],
-        location["location_coordinates"]["latitude"],
-      ]}
-    >
+  const longitude = location["location_coordinates"]["longitude"];
+  const latitude = location["location_coordinates"]["latitude"];
+
+  const inView =
+    latitude > props.viewCoordinates[0][0] &&
+    latitude < props.viewCoordinates[0][1] &&
+    longitude > props.viewCoordinates[1][0] &&
+    longitude < props.viewCoordinates[1][1];
+  const inZoom = zoom > HIGHEST_ZOOM - location["weight"] * HIGHEST_ZOOM;
+
+  return inZoom && inView ? (
+    <Marker key={location["sighting_city"]} coordinates={[longitude, latitude]}>
       <svg
         width={markerDimension}
         height={markerDimension}
