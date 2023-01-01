@@ -9,16 +9,20 @@ const MapMarker = (props) => {
   const markerDimension = 100 / zoom;
   const markerOffset = (markerDimension / 2) * -1;
 
-  const HIGHEST_ZOOM = 9;
+  const HIGHEST_ZOOM = 15;
 
   const longitude = location["location_coordinates"]["longitude"];
   const latitude = location["location_coordinates"]["latitude"];
 
+  // In view ensures the current page viewport actually
+  // shows the current location
   const inView =
     latitude > props.viewCoordinates[0][0] &&
     latitude < props.viewCoordinates[0][1] &&
     longitude > props.viewCoordinates[1][0] &&
     longitude < props.viewCoordinates[1][1];
+  //In zoom ensures the location's weight (as determined by the backend)
+  //makes it importance enough to be visible at this level of zoom
   const inZoom = zoom > HIGHEST_ZOOM - location["weight"] * HIGHEST_ZOOM;
 
   return inZoom && inView ? (

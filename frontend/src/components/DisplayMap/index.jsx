@@ -5,15 +5,18 @@ import {
   Geographies,
   Geography,
   ZoomableGroup,
-  Marker,
 } from "react-simple-maps";
 import MapMarker from "../MapMarker";
+import LocationModal from "../LocationModal";
 import { getViewCoordinates, MAP_VIEWPORT, usePrevious } from "./utils";
+import WorldCountries from "../../assets/data/world-countries.json";
 
-const geoUrl =
-  "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
+// const geoUrl =
+//   "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
+const geoUrl = WorldCountries;
 
 const DisplayMap = () => {
+  const [selectedLocation, setSelectedLocation] = React.useState();
   const [viewCoordinates, setViewCoordinates] = React.useState(MAP_VIEWPORT);
   const [locations, setLocations] = React.useState([]);
   const [position, setPosition] = React.useState([0, 0]);
@@ -47,15 +50,24 @@ const DisplayMap = () => {
   };
 
   const handleMarkerClick = (e) => {
-    console.log(e.target.id);
+    const locationId = e.target.id;
+    const selected = locations.find((loc) => {
+      return loc["location_id"] == locationId;
+    });
+
+    // Do any movement stuff here
+
+    setSelectedLocation(selected);
   };
 
   return (
     <>
+      <LocationModal selectedLocation={selectedLocation} />
       <ComposableMap projection="geoMercator">
         <ZoomableGroup
           center={[0, 0]}
           zoom={1}
+          maxZoom={15}
           onMove={handleMove}
           translateExtent={[
             [-80, -160],

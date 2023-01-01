@@ -32,6 +32,9 @@ def sightings_to_locations(all_sightings):
                 'sightings_list' : [ sighting ],
             }
 
+            # For now use this as the ID
+            locations_dict[sighting_key]['location_id'] = sighting['city']
+
             # Will need to remove this if we eventually
             # reorganize this method and use it in
             # the database processing
